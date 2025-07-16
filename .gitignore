@@ -1,32 +1,7 @@
-# Prerequisites
-*.d
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+libs/SFML-3.0.0/doc/
+libs/SFML-3.0.0/examples/
+build/
+.vscode/
+libs/SFML-3.0.0/lib
+libs/SFML-3.0.0/bin

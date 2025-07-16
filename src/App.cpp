@@ -1,6 +1,8 @@
 #include "App.h"
 #include "World.h"
 #include "Actor.h"
+#include "Character.h"
+#include "Prop.h"
 
 #include <iostream>
 
@@ -49,7 +51,9 @@ void App::Initialize()
     m_world = make_unique<World>();
     m_world->Init();
     m_world->OnSubscribeEvents(m_inputEvents);
-    m_myActor = m_world->SpawnActor(20.0f,120.0f,20.0f,sf::Color::Magenta);
+
+    m_myActor = m_world->SpawnActor<Character>(nullptr,0.0f,0.0f);
+    auto propOne = m_world->SpawnActor<Prop>(m_myActor.lock(), 100.0f, 100.0f,10.0f,10.0f,1.0f,1.0f,0.0f,sf::Color::Blue);
 }
 
 void App::Run()
@@ -112,7 +116,6 @@ void App::ProcessEvents()
 void App::Update(float deltaTime)
 {
     m_world->Update(deltaTime);
-    m_myActor->Update(deltaTime);
 }
 
 void App::FixedUpdate()
@@ -125,7 +128,6 @@ void App::Render()
     m_window->clear();
     
     m_world->Render(*m_window);
-    m_myActor->Render(*m_window);
     
     m_window->display();
 }

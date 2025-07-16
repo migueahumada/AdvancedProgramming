@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.31)
 # name of the project, and language
 project(AdvancedProgramming)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 SET(HEADERS inc/Actor.h
@@ -13,6 +13,7 @@ SET(HEADERS inc/Actor.h
             inc/HelperMacros.h
             inc/Object.h
             inc/SceneObject.h
+            inc/Prop.h
             inc/World.h
             inc/Event.h)
 
@@ -22,6 +23,7 @@ SET(SOURCE  src/main.cpp
             src/SceneObject.cpp
             src/Actor.cpp
             src/Character.cpp
+            src/Prop.cpp
             src/World.cpp
             src/Event.cpp)
 

@@ -52,7 +52,8 @@ protected:
     bool isOpen{true};
 
     SPtr<InputEvents> m_inputEvents;
-    SPtr<Actor> m_myActor;
+    WPtr<Actor> m_myActor;
+
     UPtr<World> m_world;
 
     sf::Clock m_clock;

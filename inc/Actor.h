@@ -11,78 +11,71 @@ class Actor : public SceneObject
 {
     
 public:
-    Actor() = default;
-    virtual ~Actor() = default;
+  Actor() = default;
+  virtual ~Actor() = default;
 
-    virtual void Init(float posX, float posY, float radius, sf::Color color);
-    virtual void Update(float deltaTime);
-    virtual void FixedUpdate();
-    virtual void Render(sf::RenderWindow& window);
+  virtual void Init(  float posX, 
+                      float posY,
+                      float scaleX = 1.0f, 
+                      float scaleY = 1.0f, 
+                      float rotation = 0.0f);
+  virtual void Update(float deltaTime);
+  virtual void FixedUpdate();
+  virtual void Render(sf::RenderWindow& window);
 
-    inline void SetVelocity(float xVel, float yVel){
-        m_velocity = {xVel, yVel};
-    }
+  inline void SetPosition(float xPos, float yPos){
+      m_localPosition = {xPos, yPos};
+  }
 
-    inline void SetPosition(float xPos, float yPos){
-        m_position = {xPos, yPos};
-        m_circleShape.setPosition(m_position);
-    }
+  inline void SetScale(float xScale, float yScale){
+      m_localScale = {xScale, yScale};
+  }
 
-    inline void SetAcceleration(float xAccel, float yAccel){
-        m_acceleration = {xAccel, yAccel};
-    }
+  inline void SetRotation(float newRot){
+      m_localRotation = newRot;
+  }
 
-     inline void SetTargetAcceleration(float xAccel, float yAccel){
-        m_targetAcceleration = {xAccel, yAccel};
-    }
+  inline Vector2f GetLocalPosition() const{
+      return m_localPosition;
+  }
 
-    inline void SetRadius(float newRadius){
-        m_radius = newRadius;
-        m_circleShape.setRadius(newRadius);
-    }
+  inline Vector2f GetLocalScale() const{
+      return m_localScale;
+  }
 
-    inline Vector2f GetVelocity() const{
-        return m_velocity;
-    }
+  inline float GetLocalRotation() const{
+      return m_localRotation;
+  }
 
-    inline Vector2f GetPosition() const{
-        return m_position;
-    }
+  inline Vector2f GetGlobalPosition() const{
+      return m_globalPosition;
+  }
 
-    inline Vector2f GetAcceleration() const{
-        return m_acceleration;
-    }
+  inline Vector2f GetGlobalScale() const{
+      return m_globalScale;
+  }
 
-    inline Vector2f GetTargetAcceleration() const{
-        return m_targetAcceleration;
-    }
-
-    inline float GetRadius() const{
-        return m_radius;
-    }
-
-    virtual void OnSubscribeEvents(SPtr<InputEvents>& inputEvents);
+  inline float GetGlobalRotation() const{
+      return m_globalRotation;
+  }
+  
+  virtual void OnSubscribeEvents(SPtr<InputEvents>& inputEvents);
 
 protected:
-    virtual void OnMouseRelease(int button, int x, int y);
-    virtual void OnKeyRelease(int key);
-    virtual void OnKeyPress(int key);
-    virtual void UpdateInputs();
+  void UpdateTransformations();
 
-    Vector2f m_position; //Posición
-    Vector2f m_velocity; //Velocidad
-    Vector2f m_acceleration; // Aceleración que tenemos
-    Vector2f m_targetAcceleration; //Aceleración a la que queremos llegar
+  //Local
+  Vector2f m_localPosition  {0.0f,0.0f};
+  Vector2f m_localScale     {1.0f,1.0f};
+  float m_localRotation     {0.0f};
+  
+  //Global
+  Vector2f m_globalPosition {0.0f,0.0f};
+  Vector2f m_globalScale    {1.0f,1.0f};
+  float m_globalRotation    {0.0f};
+    
 
-    float m_accelerationRate {0.5f}; //El cambio de la aceleración
-    float m_maxAcceleration {10000.0f}; //Máximo para no acelerar infinitamente
-    float m_friction {0.98f}; //Fuerza contraria a la dirección
-    float m_radius {20.0f};
-    float m_maxSpeed {500.0f};
-
-    const float acceleration {50000.0f};
-
-    sf::CircleShape m_circleShape;
+    
 };
 
 

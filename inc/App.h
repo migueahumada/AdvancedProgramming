@@ -15,8 +15,8 @@ using UMap = std::unordered_map<K,V>;
 
 class App{
 public:
-    App();
-    ~App();
+    App(){}
+    ~App(){}
 
     void Initialize();
     void Run();
@@ -38,6 +38,8 @@ public:
         return m_title;
     }
     
+    static const float FixedDeltaTime;
+
 private:
 
     void ProcessEvents();
@@ -50,14 +52,13 @@ protected:
     UPtr<sf::RenderWindow> m_window;
     sf::Vector2u m_screenSize {1280,720};
     bool isOpen{true};
-
     SPtr<InputEvents> m_inputEvents;
     WPtr<Actor> m_myActor;
-
-    UPtr<World> m_world;
-
+    SPtr<World> m_world;
     sf::Clock m_clock;
+    
     unsigned int m_frameRateLimit {60};
+    float accumulatedTime {0.0f};
 
     UMap<int, bool> m_keyStates;
     

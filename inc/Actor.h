@@ -66,11 +66,13 @@ protected:
 
   //Local
   Vector2f m_localPosition  {0.0f,0.0f};
+  Vector2f m_lastLocalPosition{ 0.0f,0.0f };
   Vector2f m_localScale     {1.0f,1.0f};
   float m_localRotation     {0.0f};
   
   //Global
   Vector2f m_globalPosition {0.0f,0.0f};
+  Vector2f m_lastGlobalPosition{ 0.0f,0.0f };
   Vector2f m_globalScale    {1.0f,1.0f};
   float m_globalRotation    {0.0f};
     

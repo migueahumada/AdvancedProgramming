@@ -17,43 +17,37 @@ void Character::Init(float posX, float posY, float radius,
   m_velocity = {0.0f,0.0f};
   m_acceleration = {0.0f,0.0f};
   m_targetAcceleration = {0.0f,0.0f};
+  m_lastLocalPosition = m_localPosition;
 }
 
 void Character::Update(float deltaTime)
 {
-  Actor::Update(deltaTime);
+ 
+
   UpdateInputs();
 
-  m_acceleration += (m_targetAcceleration - m_acceleration) * m_accelerationRate * deltaTime;
-
-  float accelMagnitude = m_acceleration.length();
-  if (accelMagnitude > m_maxAcceleration)
+  if (!m_useEulerIntegration)
   {
-    m_acceleration *= m_maxAcceleration / accelMagnitude;
+    return;
   }
 
-  m_velocity += m_acceleration * deltaTime;
+  EulerIntegration(deltaTime);
 
-  if (m_targetAcceleration.length() == 0.0f)
-  {
-    m_acceleration = {0.0f,0.0f};
-    m_velocity *= m_friction;
-  }
+  Actor::Update(deltaTime);
   
-  float speed = m_velocity.length();
-  if (speed > m_maxSpeed)
-  {
-    m_velocity *= m_maxSpeed / speed;
-  }
-
-  m_localPosition += m_velocity * deltaTime;
-  m_circleShape.setPosition(m_localPosition);
-
-  m_targetAcceleration = {0.0f,0.0f};
 }
 
 void Character::FixedUpdate()
 {
+
+  if (m_useEulerIntegration)
+  {
+    return;
+  }
+
+  VerletIntegration();
+
+  Actor::FixedUpdate();
 }
 
 void Character::Render(sf::RenderWindow &window)
@@ -89,6 +83,7 @@ void Character::OnMouseRelease(int button, int x, int y)
     SetTargetAcceleration(0.0f, 0.0f);
     SetVelocity(0.0f, 0.0f);
     SetAcceleration(0.0f, 0.0f);
+    m_lastLocalPosition = m_localPosition;
   }
 
   if (button == 1)
@@ -120,6 +115,7 @@ void Character::OnKeyRelease(int key)
     SetVelocity(0.0f,0.0f);
     SetPosition(640.0f,380.0f);
     SetAcceleration(0.0f,0.0f);
+    m_lastLocalPosition = m_localPosition;
   }
   
 }
@@ -134,24 +130,88 @@ void Character::UpdateInputs()
 {
   App& app = App::GetInstance();
 
+  float accel = m_useEulerIntegration ? eulerAcceleration : verletAcceleration;
+
   if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::A)))
   {
-    m_targetAcceleration.x = -acceleration;
+    m_targetAcceleration.x = -accel;
   }
 
   if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::D)))
   {
-    m_targetAcceleration.x = acceleration;
+    m_targetAcceleration.x = accel;
   }
 
   if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::W)))
   {
-    m_targetAcceleration.y = -acceleration;
+    m_targetAcceleration.y = -accel;
   }
 
   if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::S)))
   {
-    m_targetAcceleration.y = acceleration;
+    m_targetAcceleration.y = accel;
   }
   
+}
+
+void Character::EulerIntegration(float deltaTime)
+{
+  // Fórmula de tiro libre -> Euler
+  // P =  v0 * t + a * t^2 / 2
+
+  // V = P - P-1
+  
+  m_acceleration += (m_targetAcceleration - m_acceleration) * m_eulerAccelerationRate * deltaTime;
+
+  float accelMagnitude = m_acceleration.length();
+  if (accelMagnitude > m_eulerMaxAcceleration)
+  {
+    m_acceleration *= m_eulerMaxAcceleration / accelMagnitude;
+  }
+
+  m_velocity += m_acceleration * deltaTime;
+
+  if (m_targetAcceleration.length() == 0.0f)
+  {
+    m_acceleration = { 0.0f,0.0f };
+    m_velocity *= m_friction;
+  }
+
+  float speed = m_velocity.length();
+  if (speed > m_maxSpeed)
+  {
+    m_velocity *= m_maxSpeed / speed;
+  }
+
+  m_localPosition += m_velocity * deltaTime;
+  m_circleShape.setPosition(m_localPosition);
+
+  m_targetAcceleration = { 0.0f,0.0f };
+}
+
+void Character::VerletIntegration()
+{
+  Vector2f currentPosition = m_localPosition;
+  Vector2f deltaPosition;
+
+  m_acceleration += (m_targetAcceleration - m_acceleration) * m_verletAccelerationRate;
+
+  if (m_targetAcceleration.length() == 0.0f)
+  {
+    m_acceleration = {0.0f,0.0f};
+  }
+
+  float accelMagnitude = m_acceleration.length();
+  if (accelMagnitude > m_verletMaxAcceleration)
+  {
+    m_acceleration *= m_verletMaxAcceleration / accelMagnitude;
+  }
+
+  deltaPosition = (m_friction * m_localPosition) - (m_friction * m_lastLocalPosition);
+  m_localPosition += deltaPosition + m_acceleration;
+
+  m_circleShape.setPosition(m_localPosition);
+  m_lastLocalPosition = currentPosition;
+  m_globalPosition = m_localPosition;
+  m_targetAcceleration = {0.0f,0.0f};
 }

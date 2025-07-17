@@ -65,13 +65,23 @@ protected:
     virtual void OnKeyPress(int key);
     virtual void UpdateInputs();
 
-    float m_accelerationRate {0.5f}; //El cambio de la aceleración
-    float m_maxAcceleration {10000.0f}; //Máximo para no acelerar infinitamente
-    float m_friction {0.98f}; //Fuerza contraria a la dirección
-    float m_radius {20.0f};
-    float m_maxSpeed {500.0f};
+    void EulerIntegration(float deltaTime);
+    void VerletIntegration();
 
-    const float acceleration {50000.0f};
+    float m_eulerAccelerationRate {0.5f}; //El cambio de la aceleración
+    float m_verletAccelerationRate{0.001f}; //Máximo para no acelerar infinitamente
+    float m_eulerMaxAcceleration{ 10000.0f }; //Máximo para no acelerar infinitamente
+    float m_verletMaxAcceleration{ 10.0f }; //Máximo para no acelerar infinitamente
+    
+
+    float m_friction {0.99f}; //Fuerza contraria a la dirección
+    float m_radius {20.0f};
+    float m_maxSpeed {50000.0f};
+
+    const float eulerAcceleration {10000.0f};
+    const float verletAcceleration{ 5.0f };
+
+    bool m_useEulerIntegration{false};
 
     sf::CircleShape m_circleShape;
 };

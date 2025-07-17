@@ -6,14 +6,7 @@
 
 #include <iostream>
 
-App::App()
-{
-
-}
-
-App::~App()
-{
-}
+const float App::FixedDeltaTime = 1.0f/60.0f;
 
 void App::Initialize()
 {
@@ -46,9 +39,9 @@ void App::Initialize()
 
     m_window = make_unique<sf::RenderWindow>();
     m_window->create(sf::VideoMode(m_screenSize), "Programación Avanzada");
-    m_window->setFramerateLimit(m_frameRateLimit);
+    //m_window->setFramerateLimit(m_frameRateLimit);
 
-    m_world = make_unique<World>();
+    m_world = make_shared<World>();
     m_world->Init();
     m_world->OnSubscribeEvents(m_inputEvents);
 
@@ -58,19 +51,29 @@ void App::Initialize()
 
 void App::Run()
 {
-    
-    while (m_window->isOpen())
+  
+  while (m_window->isOpen())
+  {
+    /*
+    * FDT |-----|-----|-----|
+    * DT  ^  ^^ ^        ^  ^
+    */
+
+    float deltaTime = m_clock.restart().asSeconds(); //20ms || 18ms
+    accumulatedTime += deltaTime; //20ms || 4ms + 18ms = 22ms
+        
+    ProcessEvents();
+
+    while (accumulatedTime >= FixedDeltaTime) // 20ms >= 16ms -> YES || 4ms >= 16ms -> NO || 22ms >= 16ms -> YES
     {
-
-        float deltaTime = m_clock.restart().asSeconds();
-
-        //printf("Delta Time: %f\n",deltaTime);
-        ProcessEvents();
-
-        Update(deltaTime);
-        FixedUpdate();
-        Render();
+      std::cout << "Fixed Updated\n" << std::endl;
+      FixedUpdate();
+      accumulatedTime -= FixedDeltaTime; // 20ms - 16ms = 4ms || 22ms - 16ms = 6ms
     }
+
+    Update(deltaTime);     
+    Render();
+  }
 }
 
 void App::Shutdown()
@@ -116,6 +119,7 @@ void App::ProcessEvents()
 void App::Update(float deltaTime)
 {
     m_world->Update(deltaTime);
+    printf("Update!!!\n");
 }
 
 void App::FixedUpdate()

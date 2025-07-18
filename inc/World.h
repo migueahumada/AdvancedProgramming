@@ -5,8 +5,6 @@
 #include <SFML/Graphics.hpp>
 #include "Actor.h"
 
-using String = std::string;
-
 template <typename T>
 using Vector = std::vector<T>;
 
@@ -33,12 +31,15 @@ public:
 
     void OnSubscribeEvents(SPtr<InputEvents>& inputEvents);
 
-    inline const String& getName(){
+    inline const void setName(const std::string& newName) {
+      m_name = newName;
+    }
+    inline const std::string& getName(){
         return m_name;
     }
 protected:
 
-    String m_name;
+    std::string m_name;
     SPtr<InputEvents> m_inputEvents;
     Vector<SPtr<Actor>> m_actors;
     SPtr<Actor> m_root;

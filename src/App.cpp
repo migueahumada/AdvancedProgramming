@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include "Character.h"
 #include "Prop.h"
+#include "SpawnBall.h"
 
 #include <iostream>
 
@@ -14,27 +15,28 @@ void App::Initialize()
 
     m_inputEvents->keyPressedEvent.Subscribe([this](int key)
     {
-        std::cout << "Key Pressed: " << static_cast<char>(key + 'A') << std::endl;
+        //std::cout << "Key Pressed: " << static_cast<char>(key + 'A') << std::endl;
+        
     });
 
     m_inputEvents->keyReleasedEvent.Subscribe([this](int key)
     {
-        std::cout << "Key Released: " << static_cast<char>(key + 'A') << std::endl;
+        //std::cout << "Key Released: " << static_cast<char>(key + 'A') << std::endl;
     });
 
     m_inputEvents->mouseMoveEvent.Subscribe([this](int x, int y)
     {
-        std::cout << "Mouse Moved: " << x << ", "<< y << std::endl;
+        //std::cout << "Mouse Moved: " << x << ", "<< y << std::endl;
     });
 
     m_inputEvents->mouseButtonPressedEvent.Subscribe([this](int button, int x, int y)
     {
-        std::cout << "Mouse Button Pressed: " << button << ", "<< x << ", "<< y << std::endl;
+        //std::cout << "Mouse Button Pressed: " << button << ", "<< x << ", "<< y << std::endl;
     });
 
     m_inputEvents->mouseButtonReleasedEvent.Subscribe([this](int button, int x, int y)
     {
-        std::cout << "Mouse Button Released: " << button << ", "<< x << ", "<< y << std::endl;
+        //std::cout << "Mouse Button Released: " << button << ", "<< x << ", "<< y << std::endl;
     });
 
     m_window = make_unique<sf::RenderWindow>();
@@ -43,10 +45,14 @@ void App::Initialize()
 
     m_world = make_shared<World>();
     m_world->Init();
+    m_world->setName("MAIN WORLD");
     m_world->OnSubscribeEvents(m_inputEvents);
+    
 
     m_myActor = m_world->SpawnActor<Character>(nullptr,0.0f,0.0f);
     auto propOne = m_world->SpawnActor<Prop>(m_myActor.lock(), 100.0f, 100.0f,10.0f,10.0f,1.0f,1.0f,0.0f,sf::Color::Blue);
+    //auto ballActor = m_world->SpawnActor<SpawnBall>(nullptr,300.0f,300.0f);
+    auto ballActor = m_world->SpawnActor<SpawnBall>(nullptr,234.0f,234.0f);
 }
 
 void App::Run()
@@ -66,7 +72,6 @@ void App::Run()
 
     while (accumulatedTime >= FixedDeltaTime) // 20ms >= 16ms -> YES || 4ms >= 16ms -> NO || 22ms >= 16ms -> YES
     {
-      std::cout << "Fixed Updated\n" << std::endl;
       FixedUpdate();
       accumulatedTime -= FixedDeltaTime; // 20ms - 16ms = 4ms || 22ms - 16ms = 6ms
     }
@@ -78,6 +83,13 @@ void App::Run()
 
 void App::Shutdown()
 {
+}
+
+
+
+void App::SpawnBalls()
+{
+  auto CC = m_world->SpawnActor<SpawnBall>(m_myActor.lock(),300.0f,300.0f);
 }
 
 void App::ProcessEvents()
@@ -107,6 +119,7 @@ void App::ProcessEvents()
         if (auto* mouseEvent = sfmlEvent->getIf<sf::Event::MouseButtonReleased>())
         {
            m_inputEvents->mouseButtonReleasedEvent(static_cast<int>(mouseEvent->button), mouseEvent->position.x, mouseEvent->position.y);
+          
         }
 
         if (auto* mouseEvent = sfmlEvent->getIf<sf::Event::MouseMoved>())
@@ -119,7 +132,6 @@ void App::ProcessEvents()
 void App::Update(float deltaTime)
 {
     m_world->Update(deltaTime);
-    printf("Update!!!\n");
 }
 
 void App::FixedUpdate()

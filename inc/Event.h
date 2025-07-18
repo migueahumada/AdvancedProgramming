@@ -9,10 +9,10 @@ using std::function;
 //Se necesita esta fwd declaration porque no se puede especializar
 //Templates si antes tener la definición genérica.
 template<typename T>
-class Event;
+class MKEvent;
 
 template<typename ReturnType, typename... Args>
-class Event<ReturnType(Args...)>
+class MKEvent<ReturnType(Args...)>
 {
 public:
   using Callback = function<ReturnType(Args...)>;
@@ -42,10 +42,10 @@ private:
 
 struct InputEvents
 {
-  Event<void(int)> keyPressedEvent;
-  Event<void(int)> keyReleasedEvent;
-  Event<void(int, int)> mouseMoveEvent;
-  Event<void(int, int, int)> mouseButtonPressedEvent;
-  Event<void(int, int, int)> mouseButtonReleasedEvent;
+  MKEvent<void(int)> keyPressedEvent;
+  MKEvent<void(int)> keyReleasedEvent;
+  MKEvent<void(int, int)> mouseMoveEvent;
+  MKEvent<void(int, int, int)> mouseButtonPressedEvent;
+  MKEvent<void(int, int, int)> mouseButtonReleasedEvent;
 };
 

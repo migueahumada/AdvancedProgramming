@@ -54,6 +54,9 @@ public:
     inline float GetRadius() const{
         return m_radius;
     }
+private:
+  //Skills
+  void Teleport(int key);
 
 protected:
     Vector2f m_velocity; //Velocidad

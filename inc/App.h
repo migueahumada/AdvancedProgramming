@@ -40,6 +40,9 @@ public:
     
     static const float FixedDeltaTime;
 
+    void SpawnBalls();
+
+
 private:
 
     void ProcessEvents();
@@ -53,8 +56,11 @@ protected:
     sf::Vector2u m_screenSize {1280,720};
     bool isOpen{true};
     SPtr<InputEvents> m_inputEvents;
+    
     WPtr<Actor> m_myActor;
+
     SPtr<World> m_world;
+
     sf::Clock m_clock;
     
     unsigned int m_frameRateLimit {60};

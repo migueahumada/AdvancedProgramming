@@ -75,6 +75,18 @@ void Character::OnSubscribeEvents(SPtr<InputEvents>& inputEvents)
   });
 }
 
+void Character::Teleport(int key)
+{
+  if (key == static_cast<int>(sf::Keyboard::Key::R))
+  {
+    SetTargetAcceleration(0.0f, 0.0f);
+    SetVelocity(0.0f, 0.0f);
+    SetPosition(640.0f, 380.0f);
+    SetAcceleration(0.0f, 0.0f);
+    m_lastLocalPosition = m_localPosition;
+  }
+}
+
 void Character::OnMouseRelease(int button, int x, int y)
 {
   if (button == 0)
@@ -84,6 +96,7 @@ void Character::OnMouseRelease(int button, int x, int y)
     SetVelocity(0.0f, 0.0f);
     SetAcceleration(0.0f, 0.0f);
     m_lastLocalPosition = m_localPosition;
+    //auto spawnedBall = m_world->SpawnActor<SpawnBall>(nullptr, 180.0f, 100.0f);
   }
 
   if (button == 1)
@@ -109,15 +122,7 @@ void Character::OnMouseRelease(int button, int x, int y)
 
 void Character::OnKeyRelease(int key)
 {
-  if (key == static_cast<int>(sf::Keyboard::Key::R))
-  {
-    SetTargetAcceleration(0.0f,0.0f);
-    SetVelocity(0.0f,0.0f);
-    SetPosition(640.0f,380.0f);
-    SetAcceleration(0.0f,0.0f);
-    m_lastLocalPosition = m_localPosition;
-  }
-  
+  Teleport(key);
 }
 
 void Character::OnKeyPress(int key)
@@ -158,6 +163,7 @@ void Character::EulerIntegration(float deltaTime)
 {
   // Fórmula de tiro libre -> Euler
   // P =  v0 * t + a * t^2 / 2
+  // P = V0 + at^2/2
 
   // V = P - P-1
   

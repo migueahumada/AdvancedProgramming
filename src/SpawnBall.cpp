@@ -6,6 +6,8 @@
 
 void SpawnBall::Init(float posX, 
                      float posY, 
+                     const Vector2f& velocity,
+                     const Vector2f& acceleration,
                      float radius, 
                      float scaleX, 
                      float scaleY, 
@@ -16,32 +18,60 @@ void SpawnBall::Init(float posX,
   Actor::Init(posX,posY,scaleX,scaleY,rotation);
 
   m_radius = radius;
-  m_velocity = {0.0f,0.0f};
+  m_velocity = { 0.0f,0.0f };
   m_acceleration = { 0.0f,0.0f };
-  m_targetAcceleration = {0.0f,0.0};
+  m_targetAcceleration = { 0.0f,0.0f };
   
   m_circleShape.setRadius(m_radius);
   m_circleShape.setFillColor(color);
   m_circleShape.setOrigin({m_radius,m_radius});
   m_circleShape.setPosition(m_localPosition);
   //RandomParameters();
+  m_lastLocalPosition = m_localPosition;
 }
 
 void SpawnBall::Update(float deltaTime)
 {
   Actor::Update(deltaTime);
 
-  UpdateInputs();
 
-  EulerIntegration(deltaTime);
+    m_targetAcceleration.x = verletAcceleration;
+
+
+
+
+
   
-  //ConstantVelocityMovement(deltaTime);
-  //ConstantAccelerationMovement(deltaTime);
+
+  /*if (m_localPosition.y > App::GetInstance().getScreenSize().y)
+  {
+    m_targetAcceleration.y = -m_eulerAcceleration;
+  }
+
+  if (m_localPosition.x < App::GetInstance().getScreenSize().x)
+  {
+    m_targetAcceleration.x = m_eulerAcceleration;
+  }
+
+  if (m_localPosition.y < App::GetInstance().getScreenSize().y)
+  {
+    m_targetAcceleration.y = m_eulerAcceleration;
+  }*/
+
+
+
+
+
+
+  //EulerIntegration(deltaTime);
+  
 }
 
 void SpawnBall::FixedUpdate()
 {
   Actor::FixedUpdate();
+
+  VerletIntegration();
 }
 
 void SpawnBall::Render(sf::RenderWindow& window)
@@ -54,19 +84,7 @@ void SpawnBall::Render(sf::RenderWindow& window)
 
 void SpawnBall::OnSubscribeEvents(SPtr<InputEvents>& inputEvents)
 {
-  inputEvents->keyPressedEvent.Subscribe([this](int key)
-    {
-      OnKeyPress(key);
-    });
-  inputEvents->keyReleasedEvent.Subscribe([this](int key)
-    {
-      OnKeyRelease(key);
-    });
-
-  inputEvents->mouseButtonReleasedEvent.Subscribe([this](int button, int x, int y)
-    {
-      OnMouseRelease(button, x, y);
-    });
+  
 }
 
 void SpawnBall::OnMouseRelease(int button, int x, int y)
@@ -75,11 +93,6 @@ void SpawnBall::OnMouseRelease(int button, int x, int y)
 
 void SpawnBall::OnKeyRelease(int key)
 {
-
-  if (key == static_cast<int>(sf::Keyboard::Key::E))
-  {
-    App::GetInstance().SpawnBalls();
-  }
   
 }
 
@@ -89,28 +102,7 @@ void SpawnBall::OnKeyPress(int key)
 
 void SpawnBall::UpdateInputs()
 {
-  App& app = App::GetInstance();
-
-  if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::J)))
-  {
-    m_targetAcceleration.x = -m_eulerAcceleration;
-  }
-
-  if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::L)))
-  {
-    m_targetAcceleration.x = m_eulerAcceleration;
-  }
-
-  if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::I)))
-  {
-    m_targetAcceleration.y = -m_eulerAcceleration;
-  }
-
-  if (app.IsKeyPressed(static_cast<int>(sf::Keyboard::Key::K)))
-  {
-    m_targetAcceleration.y = m_eulerAcceleration;
-     
-  }
+ 
 
 }
 
@@ -172,11 +164,29 @@ void SpawnBall::EulerIntegration(float deltaTime)
   m_targetAcceleration = { 0.0f,0.0f };
 }
 
-void SpawnBall::RandomParameters()
+void SpawnBall::VerletIntegration()
 {
-  srand((unsigned) std::time(NULL));
+  Vector2f currentPosition = m_localPosition;
+  Vector2f deltaPosition;
 
-  int randomNumber = rand() % 5;
+  m_acceleration += (m_targetAcceleration - m_acceleration) * m_verletAccelerationRate;
 
-  printf("This is the random number: %d\n",randomNumber);
+  if (m_targetAcceleration.length() == 0.0f)
+  {
+    m_acceleration = { 0.0f,0.0f };
+  }
+
+  float accelMagnitude = m_acceleration.length();
+  if (accelMagnitude > m_verletMaxAcceleration)
+  {
+    m_acceleration *= m_verletMaxAcceleration / accelMagnitude;
+  }
+
+  deltaPosition = (m_friction * m_localPosition) - (m_friction * m_lastLocalPosition);
+  m_localPosition += deltaPosition + m_acceleration;
+
+  m_circleShape.setPosition(m_localPosition);
+  m_lastLocalPosition = currentPosition;
+  m_globalPosition = m_localPosition;
+  m_targetAcceleration = { 0.0f,0.0f };
 }

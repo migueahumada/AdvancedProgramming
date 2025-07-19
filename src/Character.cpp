@@ -123,6 +123,12 @@ void Character::OnMouseRelease(int button, int x, int y)
 void Character::OnKeyRelease(int key)
 {
   Teleport(key);
+
+  if (key == static_cast<int>(sf::Keyboard::Key::E))
+  {
+    App::GetInstance().SpawnBalls();
+  }
+  
 }
 
 void Character::OnKeyPress(int key)

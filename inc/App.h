@@ -5,7 +5,7 @@
 #include "Event.h"
 #include "HelperMacros.h"
 #include <unordered_map>
-
+#include <random>
 
 class World;
 class Actor;
@@ -42,6 +42,9 @@ public:
 
     void SpawnBalls();
 
+    inline sf::Vector2u getScreenSize(){
+      return m_screenSize;
+    }
 
 private:
 
@@ -62,9 +65,11 @@ protected:
     SPtr<World> m_world;
 
     sf::Clock m_clock;
+
+    std::mt19937 m_randMT;
     
     unsigned int m_frameRateLimit {60};
-    float accumulatedTime {0.0f};
+    float m_accumulatedTime {0.0f};
 
     UMap<int, bool> m_keyStates;
     

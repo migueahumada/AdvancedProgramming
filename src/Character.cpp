@@ -33,6 +33,8 @@ void Character::Update(float deltaTime)
 
   EulerIntegration(deltaTime);
 
+
+
   Actor::Update(deltaTime);
   
 }
@@ -81,7 +83,7 @@ void Character::Teleport(int key)
   {
     SetTargetAcceleration(0.0f, 0.0f);
     SetVelocity(0.0f, 0.0f);
-    SetPosition(640.0f, 380.0f);
+    SetLocalPosition(640.0f, 380.0f);
     SetAcceleration(0.0f, 0.0f);
     m_lastLocalPosition = m_localPosition;
   }
@@ -91,7 +93,7 @@ void Character::OnMouseRelease(int button, int x, int y)
 {
   if (button == 0)
   {
-    SetPosition((float)x, (float)y);
+    SetLocalPosition((float)x, (float)y);
     SetTargetAcceleration(0.0f, 0.0f);
     SetVelocity(0.0f, 0.0f);
     SetAcceleration(0.0f, 0.0f);
@@ -126,7 +128,7 @@ void Character::OnKeyRelease(int key)
 
   if (key == static_cast<int>(sf::Keyboard::Key::E))
   {
-    App::GetInstance().SpawnBalls();
+
   }
   
 }
@@ -224,6 +226,6 @@ void Character::VerletIntegration()
 
   m_circleShape.setPosition(m_localPosition);
   m_lastLocalPosition = currentPosition;
-  m_globalPosition = m_localPosition;
+
   m_targetAcceleration = {0.0f,0.0f};
 }

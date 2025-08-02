@@ -23,7 +23,7 @@ public:
   virtual void FixedUpdate();
   virtual void Render(sf::RenderWindow& window);
 
-  inline void SetPosition(float xPos, float yPos){
+  inline void SetLocalPosition(float xPos, float yPos){
       m_localPosition = {xPos, yPos};
   }
 
@@ -33,6 +33,10 @@ public:
 
   inline void SetRotation(float newRot){
       m_localRotation = newRot;
+  }
+
+  inline void SetLastLocalPosition(float xPos, float yPos) {
+    m_lastLocalPosition = { xPos, yPos };
   }
 
   inline Vector2f GetLocalPosition() const{
@@ -57,6 +61,10 @@ public:
 
   inline float GetGlobalRotation() const{
       return m_globalRotation;
+  }
+
+  inline Vector2f GetLastLocalPosition() const{
+    return m_lastLocalPosition;
   }
   
   virtual void OnSubscribeEvents(SPtr<InputEvents>& inputEvents);

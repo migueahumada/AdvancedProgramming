@@ -6,8 +6,6 @@
 
 void SpawnBall::Init(float posX, 
                      float posY, 
-                     const Vector2f& velocity,
-                     const Vector2f& acceleration,
                      float radius, 
                      float scaleX, 
                      float scaleY, 
@@ -18,93 +16,71 @@ void SpawnBall::Init(float posX,
   Actor::Init(posX,posY,scaleX,scaleY,rotation);
 
   m_radius = radius;
+  m_color = color;
   m_velocity = { 0.0f,0.0f };
   m_acceleration = { 0.0f,0.0f };
   m_targetAcceleration = { 0.0f,0.0f };
   
   m_circleShape.setRadius(m_radius);
-  m_circleShape.setFillColor(color);
+  m_circleShape.setFillColor(m_color);
   m_circleShape.setOrigin({m_radius,m_radius});
   m_circleShape.setPosition(m_localPosition);
-  //RandomParameters();
+
   m_lastLocalPosition = m_localPosition;
+
 }
 
 void SpawnBall::Update(float deltaTime)
 {
+  
+
+  if (!m_bUseEulerIntegration)
+  {
+    return;
+  }
+  
+  EulerIntegration(deltaTime);
+
   Actor::Update(deltaTime);
 
-
-    m_targetAcceleration.x = verletAcceleration;
-
-
-
-
-
-  
-
-  /*if (m_localPosition.y > App::GetInstance().getScreenSize().y)
-  {
-    m_targetAcceleration.y = -m_eulerAcceleration;
-  }
-
-  if (m_localPosition.x < App::GetInstance().getScreenSize().x)
-  {
-    m_targetAcceleration.x = m_eulerAcceleration;
-  }
-
-  if (m_localPosition.y < App::GetInstance().getScreenSize().y)
-  {
-    m_targetAcceleration.y = m_eulerAcceleration;
-  }*/
-
-
-
-
-
-
-  //EulerIntegration(deltaTime);
-  
 }
 
 void SpawnBall::FixedUpdate()
 {
-  Actor::FixedUpdate();
+  
+  if (m_bUseEulerIntegration)
+  {
+    return;
+  }
 
   VerletIntegration();
+
+  Actor::FixedUpdate();
+  
 }
 
 void SpawnBall::Render(sf::RenderWindow& window)
 {
-  m_circleShape.setPosition(m_globalPosition);
-  m_circleShape.setRotation(sf::radians(m_globalRotation));
-  m_circleShape.setScale({ m_globalScale.x,m_globalScale.y });
+
+  m_circleShape.setFillColor(m_color);
   window.draw(m_circleShape);
 }
 
-void SpawnBall::OnSubscribeEvents(SPtr<InputEvents>& inputEvents)
+
+void SpawnBall::AddForce(float forceX, float forceY)
 {
-  
+  SetTargetAcceleration(m_targetAcceleration.x + forceX, 
+                        m_targetAcceleration.y + forceY);
+  SetAcceleration(m_acceleration.x + forceX,
+                  m_acceleration.y + forceY);
 }
 
-void SpawnBall::OnMouseRelease(int button, int x, int y)
+void SpawnBall::AddForce(const Vector2f& force)
 {
+  AddForce(force.x,force.y);
 }
 
-void SpawnBall::OnKeyRelease(int key)
-{
-  
-}
 
-void SpawnBall::OnKeyPress(int key)
-{
-}
-
-void SpawnBall::UpdateInputs()
-{
- 
-
-}
 
 void SpawnBall::ConstantVelocityMovement(float deltaTime)
 {
@@ -161,7 +137,7 @@ void SpawnBall::EulerIntegration(float deltaTime)
   m_localPosition += m_velocity * deltaTime;
   m_circleShape.setPosition(m_localPosition);
 
-  m_targetAcceleration = { 0.0f,0.0f };
+  //m_targetAcceleration = { 0.0f,0.0f };
 }
 
 void SpawnBall::VerletIntegration()
@@ -187,6 +163,6 @@ void SpawnBall::VerletIntegration()
 
   m_circleShape.setPosition(m_localPosition);
   m_lastLocalPosition = currentPosition;
-  m_globalPosition = m_localPosition;
+
   m_targetAcceleration = { 0.0f,0.0f };
 }

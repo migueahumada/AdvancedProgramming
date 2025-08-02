@@ -14,6 +14,7 @@ SET(HEADERS inc/Actor.h
             inc/Object.h
             inc/SceneObject.h
             inc/Prop.h
+            inc/SpawnBall.h
             inc/World.h
             inc/Event.h)
 
@@ -24,6 +25,7 @@ SET(SOURCE  src/main.cpp
             src/Actor.cpp
             src/Character.cpp
             src/Prop.cpp
+            src/SpawnBall.cpp
             src/World.cpp
             src/Event.cpp)
 

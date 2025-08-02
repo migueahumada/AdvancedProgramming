@@ -23,7 +23,7 @@ void Actor::Update(float deltaTime)
 
 void Actor::FixedUpdate()
 {
-    
+  UpdateTransformations();
 }
 
 void Actor::Render(sf::RenderWindow& window)
@@ -49,7 +49,7 @@ void Actor::UpdateTransformations()
     rotatedPosition.y = std::sin(parentRotation) * m_localPosition.x + std::cos(parentRotation) * m_localPosition.y;
     
     m_globalPosition = parent->GetGlobalPosition() + rotatedPosition;
-    m_globalRotation = parent->GetGlobalRotation() * m_localRotation;
+    m_globalRotation = parent->GetGlobalRotation() + m_localRotation;
 
     m_globalScale.x = parent->GetGlobalScale().x * m_localScale.x;
     m_globalScale.y = parent->GetGlobalScale().y * m_localScale.y;

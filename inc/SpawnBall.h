@@ -15,8 +15,6 @@ public:
 
 	virtual void Init(float posX,
 										float posY,
-										const Vector2f& velocity = Vector2f(0.0f,0.0f),
-										const Vector2f& acceleration = Vector2f(0.0f, 0.0f),
 										float radius = 20.0f,
 										float scaleX = 1.0f,
 										float scaleY = 1.0f,
@@ -25,8 +23,6 @@ public:
 	virtual void Update(float deltaTime) override;
 	virtual void FixedUpdate() override;
 	virtual void Render(sf::RenderWindow& window) override;
-
-	virtual void OnSubscribeEvents(SPtr<InputEvents>& inputEvents) override;
 
 	inline void SetVelocity(float xVel, float yVel) {
 		m_velocity = { xVel, yVel };
@@ -57,28 +53,43 @@ public:
 		return m_targetAcceleration;
 	}
 
-protected:
-	
-	virtual void OnMouseRelease(int button, int x, int y);
-	virtual void OnKeyRelease(int key);
-	virtual void OnKeyPress(int key);
-	virtual void UpdateInputs();
+	inline void setColor(sf::Color newColor){
+		m_color = newColor;
+	}
 
-	Vector2f m_velocity;
+	inline float GetRadius() const
+	{
+		return m_radius;
+	}
+
+	inline bool GetUseEulerAcceleration() const
+	{
+		return m_bUseEulerIntegration;
+	}
+
+	void AddForce(float forceX, float forceY);
+	void AddForce(const Vector2f& force);
+	
+
+protected:
+
+	
 	Vector2f m_acceleration;
+	Vector2f m_velocity;
 	Vector2f m_targetAcceleration;
 
 	float m_eulerAccelerationRate{ 0.5f }; //El cambio de la aceleración
 	float m_verletAccelerationRate{ 0.001f }; //Máximo para no acelerar infinitamente
-	float m_eulerMaxAcceleration{ 200.0f }; //Máximo para no acelerar infinitamente
-	float m_verletMaxAcceleration{ 10.0f }; //Máximo para no acelerar infinitamente
+	float m_eulerMaxAcceleration{ 100000.0f }; //Máximo para no acelerar infinitamente
+	float m_verletMaxAcceleration{ 50.0f }; //Máximo para no acelerar infinitamente
 
-
-	float m_friction{ 0.5f }; //Fuerza contraria a la dirección
-	float m_maxSpeed{ 10000.0f };
+	float m_friction{ 0.99f }; //Fuerza contraria a la dirección
+	float m_maxSpeed{ 100000.0f };
 
 	const float m_eulerAcceleration {10000.0f};
-	const float verletAcceleration{ 5.0f };
+	const float m_verletAcceleration{ 5.0f };
+
+	bool m_bUseEulerIntegration{true};
 
 	void ConstantVelocityMovement(float deltaTime);
 	void ConstantAccelerationMovement(float deltaTime);
@@ -86,6 +97,7 @@ protected:
 	void VerletIntegration();
 
 	sf::CircleShape m_circleShape;
+	sf::Color m_color;
 	float m_radius{20.0f};
 };
 

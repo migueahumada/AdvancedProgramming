@@ -4,8 +4,6 @@
 #include "Character.h"
 #include "Prop.h"
 #include "SpawnBall.h"
-
-
 #include <iostream>
 
 const float App::FixedDeltaTime = 1.0f/60.0f;
@@ -49,10 +47,6 @@ void App::Initialize()
     m_world->setName("MAIN WORLD");
     m_world->OnSubscribeEvents(m_inputEvents);
     
-    m_randMT.seed((unsigned)std::time(NULL));
-
-    printf("%u",(unsigned)std::time(NULL));
-
     m_myActor = m_world->SpawnActor<Character>(nullptr,0.0f,0.0f);
     auto propOne = m_world->SpawnActor<Prop>(m_myActor.lock(), 100.0f, 100.0f,10.0f,10.0f,1.0f,1.0f,0.0f,sf::Color::Blue);
     //auto ballActor = m_world->SpawnActor<SpawnBall>(nullptr,300.0f,300.0f);
@@ -91,30 +85,7 @@ void App::Shutdown()
 
 
 
-void App::SpawnBalls()
-{
-  
-  
-  std::uniform_int_distribution xDistribuiton{ 1, static_cast<int>(m_screenSize.x) /5};
-  std::uniform_int_distribution yDistribution{ 1, static_cast<int>(m_screenSize.y) };
 
-  std::uniform_int_distribution radiusDistribution{ 10, 20};
-
-  std::uniform_int_distribution rgbColor{ 0, 254 };
-
-
-  //printf("%d\n",die6(mt));
-  auto spawnActor = m_world->SpawnActor<SpawnBall>(nullptr, 
-                                                   static_cast<float>(xDistribuiton(m_randMT)),
-                                                   static_cast<float>(yDistribution(m_randMT)),
-                                                   Vector2f(0.0f, 0.0f),
-                                                   Vector2f(0.0f, 0.0f),
-                                                   radiusDistribution(m_randMT),
-                                                   1.0f,1.0f,
-                                                   0.0f,
-                                                   sf::Color{(uint8_t)rgbColor(m_randMT),(uint8_t)rgbColor(m_randMT),(uint8_t)rgbColor(m_randMT)});
-  
-}
 
 void App::ProcessEvents()
 {

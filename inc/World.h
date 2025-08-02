@@ -10,6 +10,7 @@ using Vector = std::vector<T>;
 
 struct InputEvents;
 class SceneObject;
+class SpawnBall;
 
 class World
 {
@@ -37,7 +38,28 @@ public:
     inline const std::string& getName(){
         return m_name;
     }
+
+private:
+
+  void OnKeyRelease(int key);
+
 protected:
+    
+    void CheckCollisions();
+    void CheckCollisionsWithBorders(SPtr<Actor> character);
+    void CheckBorderCollisionEuler(SPtr<SpawnBall> spawnBall);
+    void CheckBorderCollisionVerlet(SPtr<SpawnBall> spawnBall);
+    void CheckActorsCollisionsEuler(SPtr<SpawnBall> spawnBall,
+                                    SPtr<SpawnBall> other);
+    void CheckActorsCollisionsVerlet(SPtr<SpawnBall> spawnBall, 
+                                     SPtr<SpawnBall> other);
+    void HookeSetup();
+    void HookeUpdate(float deltaTime);
+
+    const float m_eulerCannonPower{ 20000.0f };
+    const float m_verletCannonPower{ 20.0f };
+
+    static constexpr float m_collisionRestitution{0.8f};
 
     std::string m_name;
     SPtr<InputEvents> m_inputEvents;

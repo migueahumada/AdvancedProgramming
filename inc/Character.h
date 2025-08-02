@@ -54,6 +54,14 @@ public:
     inline float GetRadius() const{
         return m_radius;
     }
+
+    inline bool GetIsStatic() const{
+      return m_isStatic;
+    }
+
+    inline void SetIsStatic(bool _isStatic){
+       m_isStatic = _isStatic;
+    }
 private:
   //Skills
   void Teleport(int key);
@@ -84,7 +92,8 @@ protected:
     const float eulerAcceleration {10000.0f};
     const float verletAcceleration{ 5.0f };
 
-    bool m_useEulerIntegration{false};
+    bool m_useEulerIntegration{true};
+    bool m_isStatic{false};
 
     sf::CircleShape m_circleShape;
 };
